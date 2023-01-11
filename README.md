@@ -1,66 +1,53 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Zip Codes
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Api que provee códigos postales de las entidades federativas de México.
 
-## About Laravel
+Actualizada a la versión 2023 que provee el Gobierno de México: https://www.correosdemexico.gob.mx/SSLServicios/ConsultaCP/CodigoPostal_Exportar.aspx
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Resolución del problema
+Al momento de la publicación de esta API, se encontró que los códigos postales no cuentan con un servicio o API para acceder a este tipo de información.
+Por lo tanto, se creo esta API para proporcionar este tipo de información.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Como no cuentan con un API, se tiene que descargar el archivo de todos los códigos postales e importarlo, este proceso es un tanto laborioso, ya que el archivo; ya sea en TXT, Excel o XML, contiene bastante información.
+Para lograr esto, se desarrolo un comando, el cual genera los códigos postales a la base de datos, tomando como base el archivo XML que se descarga de la p{agina del Gobierno de México.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Una vez realizada la importación de la información, se consultan los datos actualizados de los códigos postales en el API.
 
-## Learning Laravel
+### Proceso de actualización de Códigos Postales
+1. Se descarga el archivo XML en la página de Gobierno de México
+2. Se copia y se sobreescribe el archivo en la raíz del proyecto.
+3. Se limpian las tablas correspondientes: zip_codes y settlements.
+4. Se ejecuta el comando desde un ambiente local, y se importan las tablas a la base de datos de AWS: **sail artisan import:zipcodes**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Stack de tecnologías
+Como principal herramienta se utiliza **Laravel 9.31 y PHP 8.1**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- Laravel Octane: Mejora el rendimiento de la aplicación usando Swoole con rutinas asíncronas en prod.
+- Git workflow: Flujo de trabajo de git para organizar los features y hotfixes
+- Github: Para publicar el código fuente de la API.
+- Postgres SQL: Base de datos para almacenar la información de los códigos postales.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Ambiente Local
 
-## Laravel Sponsors
+### Prerrequisitos
+Se necesitan los siguiente prerrequisitos instalados para poder replicar el API en ambiente local:
+- Composer
+- PHP 8.1
+- Docker y Docker Compose
+- Npm y Node
+- Extensión **pdo_pgsql** instalada
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### Instalación
 
-### Premium Partners
+1. Clonar el proyecto: **git clone https://github.com/krsrk/retoBackbone.git zip-codes**
+2. Cambiar al directorio del proyecto: **cd zip-codes**
+3. Copiar el archivo de configuración: **cp .env.example .env**
+4. Instalar las dependencias: **composer install**
+5. Generar el APP Key del proyecto: php artisan key:generate
+6. Ejecutar el server: php artisan serve
+7. Probar el endpoint en: http://127.0.0.1:8000/api/zip-codes/20000
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
