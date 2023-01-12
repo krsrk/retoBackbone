@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Helpers\StringConverter;
 use App\Models\ZipCode;
 use Illuminate\Support\Facades\Cache;
 
@@ -40,21 +41,23 @@ class ZipCodeRepository implements Repository
 
     public function store($data) : ZipCode
     {
+        $fedEntName = mb_strtoupper($data['d_estado']);
         $fedEnt = [
             'key' => (int)$data['c_estado'],
-            'name' => $data['d_estado'],
+            'name' => (new StringConverter($fedEntName))->toUpperCase(),
             'code' => (! empty($data['c_CP'])) ? $data['c_CP'] : null,
         ];
 
+        $munName = mb_strtoupper($data['D_mnpio']);
         $municipality = [
             'key' => (int)$data['c_mnpio'],
-            'name' => $data['D_mnpio'],
+            'name' => (new StringConverter($munName))->toUpperCase()
         ];
 
         return $this->model::updateOrCreate(
             ['zip_code' => $data['d_codigo']],
             [
-                'locality' => (array_key_exists('d_ciudad', $data)) ? $data['d_ciudad'] : '',
+                'locality' => (array_key_exists('d_ciudad', $data)) ? (new StringConverter($data['d_ciudad']))->toUpperCase() : '',
                 'federal_entity' => json_encode($fedEnt),
                 'municipality' => json_encode($municipality),
                 'created_at' => date('Y-m-d H:i:s'),

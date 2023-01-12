@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Helpers\StringConverter;
 use App\Models\Settlement;
 use App\Models\ZipCode;
 use App\Repositories\ZipCodeRepository;
 use Illuminate\Console\Command;
+use Symfony\Polyfill\Intl\Normalizer\Normalizer;
 
 class ImportZipCodesFromXML extends Command
 {
@@ -58,8 +60,8 @@ class ImportZipCodesFromXML extends Command
                 Settlement::insert([
                     'zip_code_id' => $zipCodeId,
                     'key' => (int)$dat['id_asenta_cpcons'],
-                    'name' => $dat['d_asenta'],
-                    'zone_type' => $dat['d_zona'],
+                    'name' => (new StringConverter($dat['d_asenta']))->toUpperCase(),
+                    'zone_type' => (new StringConverter($dat['d_zona']))->toUpperCase(),
                     'settlement_type' => json_encode($settlementType),
                     'created_at' => date('Y-m-d H:i:s')
                 ]);
